@@ -1,59 +1,67 @@
 # Finance-Bro Dashboard 💰
 
-Aplikasi dashboard keuangan untuk UMKM Indonesia. Kelola produk, bahan baku, pengeluaran, pemasukan, dan lihat laporan keuangan dalam satu tempat.
+A financial dashboard application for Indonesian MSMEs. Manage products, raw materials, expenses, income, and view financial reports in one place.
 
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![MongoDB](https://img.shields.io/badge/MongoDB-6-green?logo=mongodb)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC?logo=tailwind-css)
 
-## ✨ Fitur
+## ✨ Features
 
 ### 📊 Dashboard
-- Ringkasan pemasukan, pengeluaran, dan profit
-- Grafik tren keuangan 6 bulan terakhir
-- Top products dan transaksi terbaru
-- Persentase perubahan dari bulan lalu
 
-### 📦 Manajemen Produk
-- CRUD produk dengan harga jual dan HPP
-- Link bahan baku ke produk
-- Kalkulasi otomatis Harga Pokok Produksi
+* Summary of income, expenses, and profit
+* Financial trend chart for the last 6 months
+* Top products and latest transactions
+* Percentage change compared to last month
 
-### 🧪 Manajemen Bahan Baku
-- CRUD bahan baku dengan satuan dan harga
-- Auto-create expense saat menambah stok
-- Deduct stok saat produk terjual
+### 📦 Product Management
 
-### 💸 Pengeluaran
-- Catat pengeluaran dengan kategori (Bahan Baku, Produksi, Operasional)
-- Filter dan search
-- Format mata uang Indonesia
+* Product CRUD with selling price and COGS
+* Link raw materials to products
+* Automatic Cost of Goods Manufactured calculation
 
-### 💵 Pemasukan
-- Catat penjualan produk
-- Otomatis isi harga dari data produk
-- Link ke customer (opsional)
+### 🧪 Raw Material Management
 
-### 📈 Laporan
-- Laporan bulanan (6 bulan terakhir)
-- Profit per produk
-- Cash flow analysis
-- Export CSV untuk semua data
+* Raw material CRUD with units and pricing
+* Auto-create expense when adding stock
+* Deduct stock when products are sold
 
-### 🔐 Autentikasi & Keamanan
-- Login/Register dengan email & password
-- Lupa password dengan OTP via email
-- Halaman pengaturan akun
-- Ganti password (wajib input password lama)
-- Notifikasi email saat password diubah
+### 💸 Expenses
+
+* Record expenses by category (Raw Materials, Production, Operational)
+* Filter and search
+* Indonesian currency formatting
+
+### 💵 Income
+
+* Record product sales
+* Automatically fill prices from product data
+* Optional customer linking
+
+### 📈 Reports
+
+* Monthly reports (last 6 months)
+* Profit per product
+* Cash flow analysis
+* CSV export for all data
+
+### 🔐 Authentication & Security
+
+* Login/Register with email & password
+* Forgot password with OTP via email
+* Account settings page
+* Change password (requires current password)
+* Email notification when password is changed
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- MongoDB (local atau Atlas)
-- SMTP server (opsional, untuk email)
+
+* Node.js 18+
+* MongoDB (local or Atlas)
+* SMTP server (optional, for email)
 
 ### Installation
 
@@ -67,7 +75,7 @@ npm install
 
 # Setup environment
 cp .env.example .env.local
-# Edit .env.local dengan konfigurasi Anda
+# Edit .env.local with your configuration
 
 # Run development server
 npm run dev
@@ -75,19 +83,19 @@ npm run dev
 
 ### Environment Variables
 
-Buat file `.env.local`:
+Create a `.env.local` file:
 
 ```env
 # MongoDB
 MONGODB_URI=mongodb://localhost:27017/finance-bro
-# atau MongoDB Atlas:
+# or MongoDB Atlas:
 # MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/finance-bro
 
 # NextAuth
 NEXTAUTH_SECRET=your-random-secret-key-here
 NEXTAUTH_URL=http://localhost:3000
 
-# SMTP (Opsional - untuk email OTP)
+# SMTP (Optional - for OTP email)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
@@ -104,10 +112,10 @@ src/
 │   │   ├── account/      # Profile & Change Password
 │   │   ├── auth/         # Login, Register, Forgot Password
 │   │   ├── dashboard/    # Dashboard data
-│   │   ├── expenses/     # Pengeluaran CRUD
-│   │   ├── income/       # Pemasukan CRUD
-│   │   ├── materials/    # Bahan Baku CRUD
-│   │   └── products/     # Produk CRUD
+│   │   ├── expenses/     # Expenses CRUD
+│   │   ├── income/       # Income CRUD
+│   │   ├── materials/    # Raw Materials CRUD
+│   │   └── products/     # Products CRUD
 │   ├── dashboard/        # Dashboard pages
 │   │   ├── expenses/
 │   │   ├── income/
@@ -135,45 +143,40 @@ src/
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript |
-| Database | MongoDB + Mongoose |
-| Auth | NextAuth.js |
-| Styling | Tailwind CSS 4 |
-| Icons | Lucide React |
-| Date | date-fns |
-| Validation | Zod |
-| Email | Nodemailer |
+| Category   | Technology              |
+| ---------- | ----------------------- |
+| Framework  | Next.js 14 (App Router) |
+| Language   | TypeScript              |
+| Database   | MongoDB + Mongoose      |
+| Auth       | NextAuth.js             |
+| Styling    | Tailwind CSS 4          |
+| Icons      | Lucide React            |
+| Date       | date-fns                |
+| Validation | Zod                     |
+| Email      | Nodemailer              |
 
 ## 📱 Screenshots
 
 ### Dashboard
+
 ![Dashboard](/screenshots/dashboard.png)
 
 ### Products Management
+
 ![Products](/screenshots/products.png)
 
 ### Reports
+
 ![Reports](/screenshots/reports.png)
 
 ## 🔒 Security Features
 
-- Password hashing dengan bcrypt (12 rounds)
-- OTP untuk reset password (6 digit, expires 10 menit)
-- Session-based authentication
-- Protected API routes
-- Email notification on password change
+* Password hashing with bcrypt (12 rounds)
+* OTP for password reset (6 digits, expires in 10 minutes)
+* Session-based authentication
+* Protected API routes
+* Email notification on password change
 
 ## 📄 License
 
-MIT License - gunakan untuk keperluan pribadi atau komersial.
-
-## 🤝 Contributing
-
-Pull requests welcome! Untuk perubahan besar, silakan buka issue terlebih dahulu.
-
----
-
-Made with ❤️ for Indonesian SMEs
+MIT License — free to use for personal or commercial purposes.
