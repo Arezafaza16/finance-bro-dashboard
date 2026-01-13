@@ -33,7 +33,9 @@ export default function SettingsPage() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPasswords, setShowPasswords] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
         fetchProfile();
@@ -166,8 +168,8 @@ export default function SettingsPage() {
                 <button
                     onClick={() => setActiveTab('profile')}
                     className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors ${activeTab === 'profile'
-                            ? 'bg-white/10 text-white border-b-2 border-purple-500'
-                            : 'text-gray-400 hover:text-white'
+                        ? 'bg-white/10 text-white border-b-2 border-purple-500'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                 >
                     <User size={18} />
@@ -176,8 +178,8 @@ export default function SettingsPage() {
                 <button
                     onClick={() => setActiveTab('security')}
                     className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors ${activeTab === 'security'
-                            ? 'bg-white/10 text-white border-b-2 border-purple-500'
-                            : 'text-gray-400 hover:text-white'
+                        ? 'bg-white/10 text-white border-b-2 border-purple-500'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                 >
                     <Shield size={18} />
@@ -188,8 +190,8 @@ export default function SettingsPage() {
             {/* Message */}
             {message.text && (
                 <div className={`p-3 rounded-lg ${message.type === 'success'
-                        ? 'bg-green-500/20 border border-green-500/50 text-green-300'
-                        : 'bg-red-500/20 border border-red-500/50 text-red-300'
+                    ? 'bg-green-500/20 border border-green-500/50 text-green-300'
+                    : 'bg-red-500/20 border border-red-500/50 text-red-300'
                     }`}>
                     {message.text}
                 </div>
@@ -295,19 +297,20 @@ export default function SettingsPage() {
                                 </label>
                                 <div className="relative">
                                     <input
-                                        type={showPasswords ? 'text' : 'password'}
+                                        type={showCurrentPassword ? 'text' : 'password'}
                                         value={currentPassword}
                                         onChange={(e) => setCurrentPassword(e.target.value)}
                                         required
+                                        suppressHydrationWarning
                                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 pr-12"
                                         placeholder="Masukkan password lama"
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => setShowPasswords(!showPasswords)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                                     >
-                                        {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </button>
                                 </div>
                             </div>
@@ -316,29 +319,49 @@ export default function SettingsPage() {
                                 <label className="block text-sm font-medium text-gray-300 mb-2">
                                     Password Baru
                                 </label>
-                                <input
-                                    type={showPasswords ? 'text' : 'password'}
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                    minLength={6}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    placeholder="Minimal 6 karakter"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showNewPassword ? 'text' : 'password'}
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        required
+                                        minLength={6}
+                                        suppressHydrationWarning
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 pr-12"
+                                        placeholder="Minimal 6 karakter"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
+                                </div>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-2">
                                     Konfirmasi Password Baru
                                 </label>
-                                <input
-                                    type={showPasswords ? 'text' : 'password'}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    placeholder="Ulangi password baru"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                        suppressHydrationWarning
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 pr-12"
+                                        placeholder="Ulangi password baru"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="pt-4">
