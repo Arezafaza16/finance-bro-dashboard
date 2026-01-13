@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-// Email configuration - uses console.log fallback if not configured
+// Email configuration 
 const isEmailConfigured = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
 
 const transporter = isEmailConfigured
@@ -27,7 +27,7 @@ interface EmailOptions {
 
 async function sendEmail(options: EmailOptions): Promise<boolean> {
   if (!transporter) {
-    // Fallback: log to console for development
+    // console for development
     console.log(' ========== EMAIL (DEV MODE) ==========');
     console.log(`To: ${options.to}`);
     console.log(`Subject: ${options.subject}`);

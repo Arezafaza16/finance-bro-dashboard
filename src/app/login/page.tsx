@@ -74,6 +74,7 @@ export default function LoginPage() {
                                 id="email"
                                 name="email"
                                 required
+                                suppressHydrationWarning
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                                 placeholder="email@example.com"
                             />
@@ -88,6 +89,7 @@ export default function LoginPage() {
                                 id="password"
                                 name="password"
                                 required
+                                suppressHydrationWarning
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                                 placeholder="••••••••"
                             />
@@ -96,6 +98,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
+                            suppressHydrationWarning
                             className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
