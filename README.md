@@ -159,15 +159,18 @@ src/
 
 ### Dashboard
 
-![Dashboard](/screenshots/dashboard.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/834e0bb5-fde8-4d5a-8938-59ca40cda24f" />
+
 
 ### Products Management
 
-![Products](/screenshots/products.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e7bf14c8-6024-4415-9c92-1b1cc4a24362" />
+
 
 ### Reports
 
-![Reports](/screenshots/reports.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/daf5911f-620f-46e2-9e65-2a24c75cf779" />
+
 
 ## 🔒 Security Features
 
