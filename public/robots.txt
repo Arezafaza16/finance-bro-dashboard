@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Auth pages
+Allow: /login
+Allow: /register
+Allow: /forgot-password
+
+# Dashboard is protected, no need to index
+Disallow: /dashboard
+Disallow: /api
+
+# Sitemap
+Sitemap: https://finance-bro-dashboard.vercel.app/sitemap.xml

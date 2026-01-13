@@ -9,7 +9,7 @@ const updateProfileSchema = z.object({
     name: z.string().min(2, 'Nama minimal 2 karakter').max(50).optional(),
     email: z.string().email('Email tidak valid').optional(),
     phone: z.string().regex(/^(\+62|62|0)[0-9]{9,12}$/, 'Nomor HP tidak valid').optional().or(z.literal('')),
-});
+}).strict();
 
 // GET current user profile
 export async function GET() {
@@ -52,10 +52,11 @@ export async function PUT(request: NextRequest) {
         const validatedData = updateProfileSchema.safeParse(body);
 
         if (!validatedData.success) {
-            return NextResponse.json(
-                { error: validatedData.error.issues[0].message },
-                { status: 400 }
-            );
+            const firstError = validatedData.error.issues[0];
+            const errorMessage = firstError.code === 'unrecognized_keys'
+                ? `Field tidak dikenal: ${(firstError as { keys: string[] }).keys.join(', ')}`
+                : firstError.message;
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
         }
 
         await connectDB();

@@ -5,18 +5,20 @@ import connectDB from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Material from '@/models/Material';
 import { z } from 'zod';
+import { checkRateLimit, rateLimitResponse, sanitizeProductList, sanitizeProduct } from '@/lib/security';
 
 const productMaterialSchema = z.object({
     materialId: z.string(),
     quantity: z.number().min(0),
-});
+}).strict();
 
+// Strict schema - rejects unknown fields
 const productSchema = z.object({
     name: z.string().min(1, 'Nama produk wajib diisi').max(100),
     description: z.string().max(500).optional(),
     sellingPrice: z.number().min(0, 'Harga jual tidak boleh negatif'),
     materials: z.array(productMaterialSchema).optional().default([]),
-});
+}).strict();
 
 // Calculate HPP from materials
 async function calculateHPP(materials: { materialId: string; quantity: number }[]) {
@@ -48,9 +50,13 @@ export async function GET() {
 
         const products = await Product.find({ userId: session.user.id })
             .populate('materials.materialId', 'name unit pricePerUnit')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
 
-        return NextResponse.json(products);
+        // Sanitize response
+        const sanitizedProducts = sanitizeProductList(products);
+
+        return NextResponse.json(sanitizedProducts);
     } catch (error) {
         console.error('Get products error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
@@ -65,14 +71,23 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Rate limiting
+        const rateLimit = checkRateLimit(session.user.id);
+        if (!rateLimit.allowed) {
+            return rateLimitResponse(rateLimit.resetTime);
+        }
+
         const body = await request.json();
+
+        // Strict validation
         const validatedData = productSchema.safeParse(body);
 
         if (!validatedData.success) {
-            return NextResponse.json(
-                { error: validatedData.error.issues[0].message },
-                { status: 400 }
-            );
+            const firstError = validatedData.error.issues[0];
+            const errorMessage = firstError.code === 'unrecognized_keys'
+                ? `Field tidak dikenal: ${(firstError as { keys: string[] }).keys.join(', ')}`
+                : firstError.message;
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
         }
 
         await connectDB();
@@ -99,9 +114,13 @@ export async function POST(request: NextRequest) {
             hpp,
         });
 
-        return NextResponse.json(product, { status: 201 });
+        // Sanitize response
+        const sanitizedProduct = sanitizeProduct(product.toObject());
+
+        return NextResponse.json(sanitizedProduct, { status: 201 });
     } catch (error) {
         console.error('Create product error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 }
+

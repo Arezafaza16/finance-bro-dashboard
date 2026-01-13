@@ -4,7 +4,9 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Expense from '@/models/Expense';
 import { z } from 'zod';
+import { checkRateLimit, rateLimitResponse, sanitizeExpenseList, sanitizeExpense } from '@/lib/security';
 
+// Strict schema - rejects unknown fields
 const expenseSchema = z.object({
     date: z.string().or(z.date()),
     description: z.string().min(1, 'Deskripsi wajib diisi').max(200),
@@ -13,7 +15,7 @@ const expenseSchema = z.object({
     materialId: z.string().optional(),
     quantity: z.number().min(0).optional(),
     amount: z.number().min(0, 'Jumlah tidak boleh negatif'),
-});
+}).strict();
 
 // GET all expenses
 export async function GET(request: NextRequest) {
@@ -46,9 +48,13 @@ export async function GET(request: NextRequest) {
         const expenses = await Expense.find(query)
             .populate('productId', 'name')
             .populate('materialId', 'name unit')
-            .sort({ date: -1, createdAt: -1 });
+            .sort({ date: -1, createdAt: -1 })
+            .lean();
 
-        return NextResponse.json(expenses);
+        // Sanitize response
+        const sanitizedExpenses = sanitizeExpenseList(expenses);
+
+        return NextResponse.json(sanitizedExpenses);
     } catch (error) {
         console.error('Get expenses error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
@@ -63,14 +69,23 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Rate limiting
+        const rateLimit = checkRateLimit(session.user.id);
+        if (!rateLimit.allowed) {
+            return rateLimitResponse(rateLimit.resetTime);
+        }
+
         const body = await request.json();
+
+        // Strict validation
         const validatedData = expenseSchema.safeParse(body);
 
         if (!validatedData.success) {
-            return NextResponse.json(
-                { error: validatedData.error.issues[0].message },
-                { status: 400 }
-            );
+            const firstError = validatedData.error.issues[0];
+            const errorMessage = firstError.code === 'unrecognized_keys'
+                ? `Field tidak dikenal: ${(firstError as { keys: string[] }).keys.join(', ')}`
+                : firstError.message;
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
         }
 
         await connectDB();
@@ -81,9 +96,13 @@ export async function POST(request: NextRequest) {
             userId: session.user.id,
         });
 
-        return NextResponse.json(expense, { status: 201 });
+        // Sanitize response
+        const sanitizedExpense = sanitizeExpense(expense.toObject());
+
+        return NextResponse.json(sanitizedExpense, { status: 201 });
     } catch (error) {
         console.error('Create expense error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 }
+

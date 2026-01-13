@@ -4,7 +4,9 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Income from '@/models/Income';
 import { z } from 'zod';
+import { checkRateLimit, rateLimitResponse, sanitizeIncomeList, sanitizeIncome } from '@/lib/security';
 
+// Strict schema - rejects unknown fields
 const incomeSchema = z.object({
     date: z.string().or(z.date()),
     productId: z.string().min(1, 'Produk wajib dipilih'),
@@ -13,7 +15,7 @@ const incomeSchema = z.object({
     totalAmount: z.number().min(0, 'Total tidak boleh negatif'),
     customerName: z.string().max(100).optional(),
     notes: z.string().max(500).optional(),
-});
+}).strict();
 
 // GET all income
 export async function GET(request: NextRequest) {
@@ -45,9 +47,13 @@ export async function GET(request: NextRequest) {
 
         const incomes = await Income.find(query)
             .populate('productId', 'name sellingPrice')
-            .sort({ date: -1, createdAt: -1 });
+            .sort({ date: -1, createdAt: -1 })
+            .lean();
 
-        return NextResponse.json(incomes);
+        // Sanitize response - remove internal fields
+        const sanitizedIncomes = sanitizeIncomeList(incomes);
+
+        return NextResponse.json(sanitizedIncomes);
     } catch (error) {
         console.error('Get income error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
@@ -62,14 +68,23 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Rate limiting
+        const rateLimit = checkRateLimit(session.user.id);
+        if (!rateLimit.allowed) {
+            return rateLimitResponse(rateLimit.resetTime);
+        }
+
         const body = await request.json();
+
+        // Strict validation - rejects unknown fields
         const validatedData = incomeSchema.safeParse(body);
 
         if (!validatedData.success) {
-            return NextResponse.json(
-                { error: validatedData.error.issues[0].message },
-                { status: 400 }
-            );
+            const firstError = validatedData.error.issues[0];
+            const errorMessage = firstError.code === 'unrecognized_keys'
+                ? `Field tidak dikenal: ${(firstError as { keys: string[] }).keys.join(', ')}`
+                : firstError.message;
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
         }
 
         await connectDB();
@@ -80,9 +95,13 @@ export async function POST(request: NextRequest) {
             userId: session.user.id,
         });
 
-        return NextResponse.json(income, { status: 201 });
+        // Sanitize response
+        const sanitizedIncome = sanitizeIncome(income.toObject());
+
+        return NextResponse.json(sanitizedIncome, { status: 201 });
     } catch (error) {
         console.error('Create income error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 }
+
