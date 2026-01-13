@@ -192,8 +192,27 @@ export default function ProductsPage() {
 
             {/* Products Grid */}
             {isLoading ? (
-                <div className="flex items-center justify-center h-48">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="bg-white/5 rounded-2xl border border-white/10 p-6">
+                            <div className="flex items-start justify-between mb-4">
+                                <div>
+                                    <div className="h-5 w-28 bg-white/10 rounded mb-2"></div>
+                                    <div className="h-3 w-40 bg-white/5 rounded"></div>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="flex justify-between">
+                                    <div className="h-4 w-20 bg-white/10 rounded"></div>
+                                    <div className="h-4 w-24 bg-white/10 rounded"></div>
+                                </div>
+                                <div className="flex justify-between">
+                                    <div className="h-4 w-16 bg-white/10 rounded"></div>
+                                    <div className="h-4 w-20 bg-white/10 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : filteredProducts.length === 0 ? (
                 <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">

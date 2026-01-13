@@ -227,8 +227,15 @@ export default function ExpensesPage() {
             {/* Table */}
             <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
                 {isLoading ? (
-                    <div className="flex items-center justify-center h-48">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                    <div className="animate-pulse">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 border-b border-white/5">
+                                <div className="h-4 w-24 bg-white/10 rounded"></div>
+                                <div className="h-4 w-40 bg-white/10 rounded flex-1"></div>
+                                <div className="h-4 w-20 bg-white/10 rounded"></div>
+                                <div className="h-4 w-24 bg-white/10 rounded"></div>
+                            </div>
+                        ))}
                     </div>
                 ) : filteredExpenses.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-48 text-gray-400">

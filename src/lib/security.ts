@@ -84,14 +84,16 @@ interface MongoDocument {
 }
 
 /**
- * Base sanitizer - removes internal MongoDB fields
+ * Base sanitizer - removes internal MongoDB fields but keeps _id for compatibility
  */
 function sanitizeBase<T extends MongoDocument>(doc: T, allowedFields: string[]): Record<string, unknown> {
     const result: Record<string, unknown> = {};
 
-    // Convert _id to id
+    // Keep both _id (for backwards compatibility) and id (new standard)
     if (doc._id) {
-        result.id = typeof doc._id === 'string' ? doc._id : doc._id.toString();
+        const idString = typeof doc._id === 'string' ? doc._id : doc._id.toString();
+        result._id = idString;
+        result.id = idString;
     }
 
     // Only include allowed fields
@@ -122,8 +124,10 @@ export function sanitizeIncome(doc: any): Record<string, unknown> {
     // Handle populated productId
     if (doc.productId && typeof doc.productId === 'object') {
         const product = doc.productId;
-        sanitized.product = {
-            id: product._id ? (typeof product._id === 'string' ? product._id : product._id.toString()) : undefined,
+        const productId = product._id ? (typeof product._id === 'string' ? product._id : product._id.toString()) : undefined;
+        sanitized.productId = {
+            _id: productId,
+            id: productId,
             name: product.name,
             sellingPrice: product.sellingPrice,
         };
@@ -151,8 +155,10 @@ export function sanitizeExpense(doc: any): Record<string, unknown> {
     // Handle populated productId
     if (doc.productId && typeof doc.productId === 'object') {
         const product = doc.productId;
-        sanitized.product = {
-            id: product._id ? (typeof product._id === 'string' ? product._id : product._id.toString()) : undefined,
+        const productId = product._id ? (typeof product._id === 'string' ? product._id : product._id.toString()) : undefined;
+        sanitized.productId = {
+            _id: productId,
+            id: productId,
             name: product.name,
         };
     }
@@ -160,8 +166,10 @@ export function sanitizeExpense(doc: any): Record<string, unknown> {
     // Handle populated materialId
     if (doc.materialId && typeof doc.materialId === 'object') {
         const material = doc.materialId;
-        sanitized.material = {
-            id: material._id ? (typeof material._id === 'string' ? material._id : material._id.toString()) : undefined,
+        const materialId = material._id ? (typeof material._id === 'string' ? material._id : material._id.toString()) : undefined;
+        sanitized.materialId = {
+            _id: materialId,
+            id: materialId,
             name: material.name,
             unit: material.unit,
         };
@@ -188,9 +196,11 @@ export function sanitizeProduct(doc: any): Record<string, unknown> {
         sanitized.materials = doc.materials.map((m: { materialId?: MongoDocument; quantity?: number }) => {
             if (m.materialId && typeof m.materialId === 'object') {
                 const material = m.materialId as MongoDocument;
+                const materialId = material._id ? (typeof material._id === 'string' ? material._id : material._id.toString()) : undefined;
                 return {
-                    material: {
-                        id: material._id ? (typeof material._id === 'string' ? material._id : material._id.toString()) : undefined,
+                    materialId: {
+                        _id: materialId,
+                        id: materialId,
                         name: material.name,
                         unit: material.unit,
                         pricePerUnit: material.pricePerUnit,

@@ -131,8 +131,25 @@ export default function SettingsPage() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            <div className="space-y-6 animate-pulse">
+                <div>
+                    <div className="h-8 w-44 bg-white/10 rounded-lg mb-2"></div>
+                    <div className="h-4 w-60 bg-white/5 rounded"></div>
+                </div>
+                <div className="flex gap-4 border-b border-white/10 pb-4">
+                    <div className="h-8 w-20 bg-white/10 rounded-lg"></div>
+                    <div className="h-8 w-24 bg-white/5 rounded-lg"></div>
+                </div>
+                <div className="bg-white/5 rounded-2xl border border-white/10 p-6 max-w-2xl">
+                    <div className="space-y-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i}>
+                                <div className="h-4 w-24 bg-white/10 rounded mb-2"></div>
+                                <div className="h-12 w-full bg-white/5 rounded-lg"></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }

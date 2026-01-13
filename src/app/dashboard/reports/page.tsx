@@ -274,8 +274,27 @@ export default function ReportsPage() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            <div className="space-y-6 animate-pulse">
+                <div>
+                    <div className="h-8 w-32 bg-white/10 rounded-lg mb-2"></div>
+                    <div className="h-4 w-52 bg-white/5 rounded"></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="bg-white/5 rounded-2xl border border-white/10 p-6">
+                            <div className="h-3 w-24 bg-white/10 rounded mb-2"></div>
+                            <div className="h-7 w-32 bg-white/10 rounded"></div>
+                        </div>
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {[1, 2].map((i) => (
+                        <div key={i} className="bg-white/5 rounded-2xl border border-white/10 p-6">
+                            <div className="h-5 w-40 bg-white/10 rounded mb-4"></div>
+                            <div className="h-64 bg-white/5 rounded-xl"></div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
