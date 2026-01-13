@@ -1,8 +1,10 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { authOptions } from '@/lib/auth';
 import Sidebar from '@/components/layout/Sidebar';
 import Providers from '@/components/providers/SessionProvider';
+import DashboardSkeleton from '@/components/ui/Skeleton';
 
 export default async function DashboardLayout({
     children,
@@ -20,9 +22,14 @@ export default async function DashboardLayout({
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
                 <Sidebar />
                 <main className="lg:ml-64 min-h-screen">
-                    <div className="p-6 lg:p-8">{children}</div>
+                    <div className="p-6 lg:p-8">
+                        <Suspense fallback={<DashboardSkeleton />}>
+                            {children}
+                        </Suspense>
+                    </div>
                 </main>
             </div>
         </Providers>
     );
 }
+
