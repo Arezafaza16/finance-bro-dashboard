@@ -174,8 +174,8 @@ src/
 
 ## 🔒 Security Features
 
-* Password hashing with bcrypt (12 rounds)
-* OTP for password reset (6 digits, expires in 10 minutes)
+* Password hashing with bcrypt 
+* OTP for password reset 
 * Session-based authentication
 * Protected API routes
 * Email notification on password change
