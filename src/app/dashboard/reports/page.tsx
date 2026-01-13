@@ -62,10 +62,10 @@ export default function ReportsPage() {
         try {
             // Fetch dashboard data for monthly trends
             const dashboardRes = await fetch('/api/dashboard');
-            const dashboardData = await dashboardRes.json();
+            const dashboardData = dashboardRes.ok ? await dashboardRes.json() : {};
 
             // Calculate monthly data from dashboard
-            if (dashboardData.monthlyData) {
+            if (dashboardData.monthlyData && Array.isArray(dashboardData.monthlyData)) {
                 const monthly = dashboardData.monthlyData.map((m: { month: string; income: number; expense: number }) => ({
                     ...m,
                     profit: m.income - m.expense,
@@ -74,7 +74,7 @@ export default function ReportsPage() {
             }
 
             // Fetch product profits from top products
-            if (dashboardData.topProducts) {
+            if (dashboardData.topProducts && Array.isArray(dashboardData.topProducts)) {
                 const productProfit = dashboardData.topProducts.map((p: { _id: string; name: string; revenue: number; quantity: number }) => ({
                     ...p,
                     cost: 0, // Would need HPP data from products
@@ -92,13 +92,15 @@ export default function ReportsPage() {
 
             // Fetch expenses by category for cash flow
             const expensesRes = await fetch('/api/expenses');
-            const expenses = await expensesRes.json();
+            const expenses = expensesRes.ok ? await expensesRes.json() : [];
 
-            // Group expenses by category
+            // Group expenses by category (ensure it's an array)
             const categoryTotals: Record<string, number> = {};
-            expenses.forEach((e: { category: string; amount: number }) => {
-                categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount;
-            });
+            if (Array.isArray(expenses)) {
+                expenses.forEach((e: { category: string; amount: number }) => {
+                    categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount;
+                });
+            }
 
             const cashFlow: CashFlowData[] = [
                 { category: 'Penjualan', income: dashboardData.totalIncome || 0, expense: 0, net: dashboardData.totalIncome || 0 },
@@ -192,10 +194,17 @@ export default function ReportsPage() {
                 fetch('/api/materials'),
             ]);
 
-            const incomes = await incomesRes.json();
-            const expenses = await expensesRes.json();
-            const products = await productsRes.json();
-            const materials = await materialsRes.json();
+            // Parse responses with validation
+            const incomesData = incomesRes.ok ? await incomesRes.json() : [];
+            const expensesData = expensesRes.ok ? await expensesRes.json() : [];
+            const productsData = productsRes.ok ? await productsRes.json() : [];
+            const materialsData = materialsRes.ok ? await materialsRes.json() : [];
+
+            // Ensure all data are arrays
+            const incomes = Array.isArray(incomesData) ? incomesData : [];
+            const expenses = Array.isArray(expensesData) ? expensesData : [];
+            const products = Array.isArray(productsData) ? productsData : [];
+            const materials = Array.isArray(materialsData) ? materialsData : [];
 
             // BOM for UTF-8 Excel compatibility
             const BOM = '\uFEFF';
@@ -259,6 +268,7 @@ export default function ReportsPage() {
             link.click();
         } catch (error) {
             console.error('Export error:', error);
+            alert('Terjadi kesalahan saat export data. Silakan coba lagi.');
         }
     };
 
